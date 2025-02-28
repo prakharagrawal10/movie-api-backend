@@ -68,7 +68,7 @@ exports.sendTicket = async (req, res) => {
     await ticket.save();
 
     // 🔹 Generate QR Code (Containing Ticket ID)
-    const qrData = `REACT_APP_API_URL/scan/${ticket._id}`;  // ✅ Direct URL
+    const qrData = `${process.env.REACT_APP_API_URL}/scan/${ticket._id}`;
     const qrCodeBase64 = await QRCode.toDataURL(qrData);
     
     ticket.qrCode = qrCodeBase64;
