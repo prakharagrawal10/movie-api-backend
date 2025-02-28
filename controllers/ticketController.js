@@ -5,6 +5,47 @@ const fs = require("fs");
 const { Ticket } = require("../models/model");
 require("dotenv").config();
 
+
+// 🎯 Scan Ticket and Mark as Used
+exports.scanTicket = async (req, res) => {
+  try {
+      const { ticketId } = req.params;
+
+      // 🔍 Find Ticket in Database
+      const ticket = await Ticket.findById(ticketId);
+
+      if (!ticket) {
+          return res.send(`
+              <h2 style="color: red;">Invalid Ticket ❌</h2>
+              <p>This ticket does not exist. Please check your booking details.</p>
+          `);
+      }
+
+      if (ticket.isUsed) {
+          return res.send(`
+              <h2 style="color: orange;">Ticket Already Used! ⚠️</h2>
+              <p>This ticket has already been scanned.</p>
+          `);
+      }
+
+      // ✅ Mark Ticket as Used
+      ticket.isUsed = true;
+      await ticket.save();
+
+      res.send(`
+          <h2 style="color: green;">Ticket Verified! ✅</h2>
+          <p>Enjoy your movie! 🍿</p>
+      `);
+  } catch (error) {
+      console.error("Error scanning ticket:", error);
+      res.status(500).send(`
+          <h2 style="color: red;">Error Processing Ticket ❌</h2>
+          <p>Something went wrong while verifying your ticket.</p>
+      `);
+  }
+};
+
+
 // 🎟 Send Ticket and Email
 exports.sendTicket = async (req, res) => {
   try {
@@ -27,8 +68,9 @@ exports.sendTicket = async (req, res) => {
     await ticket.save();
 
     // 🔹 Generate QR Code (Containing Ticket ID)
-    const qrData = JSON.stringify({ ticketId: ticket._id.toString() });
+    const qrData = `REACT_APP_API_URL/scan/${ticket._id}`;  // ✅ Direct URL
     const qrCodeBase64 = await QRCode.toDataURL(qrData);
+    
     ticket.qrCode = qrCodeBase64;
     await ticket.save();
 

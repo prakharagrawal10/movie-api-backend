@@ -6,6 +6,7 @@ const {
   signupUser,
   getProfile,
   myAccount,
+  verifyEmail
 } = require("../controllers/userController.js");
 
 const router = express.Router();
@@ -21,5 +22,8 @@ router.get("/profile", getProfile);
 
 //my account route
 router.get("/account", myAccount);
+
+router.get("/verify-email", verifyEmail);
+
 
 module.exports = router;

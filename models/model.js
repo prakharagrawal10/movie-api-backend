@@ -6,12 +6,8 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  bookings: [ 
-    {
-      showtime: { type: mongoose.Schema.Types.ObjectId, ref: "Showtime" },
-      seats: [[Number]], // Array of booked seat positions (e.g., [[0,1], [2,3]])
-    },
-  ],
+  isVerified: { type: Boolean, default: false },
+  verificationToken: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
