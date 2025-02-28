@@ -6,10 +6,13 @@ WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --only=production
 
 # Copy the rest of the project
 COPY . .
+
+# Set environment to production
+ENV NODE_ENV=production
 
 # Expose port 5000
 EXPOSE 5000
