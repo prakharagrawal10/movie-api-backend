@@ -1,5 +1,4 @@
-const { User } = require("../models/userModel");
-const { Ticket } = require("../models/ticketModel");
+const { User,  Ticket } = require("../models/model");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
