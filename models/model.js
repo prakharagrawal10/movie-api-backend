@@ -48,10 +48,16 @@ userSchema.statics.login = async function (email, password) {
 
 const movieSchema = new mongoose.Schema({
   title: { type: String, required: true, unique: true },
-  genre: [String],
-  duration: Number,
-  releaseDate: Date,
-});
+  genre: { type: [String], required: true }, 
+  duration: { type: Number, required: true },
+  releaseDate: { type: Date, required: true },
+  posterUrl: { type: String, required: true }, // URL of the movie poster
+  imdbRating: { type: Number, min: 0, max: 10 }, // IMDb rating (0-10)
+  cast: { type: [String], required: true }, // Array of cast members
+  director: { type: String, required: true }, // Director's name
+  description: { type: String }, // Short movie description
+  trailerUrl: { type: String }, // Link to the trailer
+}, { timestamps: true });
 
 // Static method to add a movie
 movieSchema.statics.addMovie = async function (movieData) {
@@ -74,6 +80,18 @@ movieSchema.statics.getAllMovies = async function () {
 movieSchema.statics.getMovieByTitle = async function (title) {
   return await this.findOne({ title });
 };
+
+// Static method to get movies by genre
+movieSchema.statics.getMoviesByGenre = async function (genre) {
+  return await this.find({ genre: genre });
+};
+
+// Static method to get movies by director
+movieSchema.statics.getMoviesByDirector = async function (director) {
+  return await this.find({ director });
+};
+
+
 
 // Showtime Schema
 

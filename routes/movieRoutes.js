@@ -1,19 +1,18 @@
-const express = require('express')
+const express = require('express');
 
-// controller functions
-const { addMovie, getAllMovies, getMovieByTitle } = require('../controllers/movieController.js')
+// Controller functions
+const { addMovie, getAllMovies, getMovieByTitle, getMoviesByGenre, getMoviesByDirector } = require('../controllers/movieController.js');
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/add-movie', addMovie)
+router.post('/add-movie', addMovie);
 
-router.get('/get-all', getAllMovies)
+router.get('/get-all', getAllMovies);
 
 router.get('/get-one/:title', getMovieByTitle);
 
-module.exports = router
+// New routes
+router.get('/get-by-genre/:genre', getMoviesByGenre); // Get movies by genre
+router.get('/get-by-director/:director', getMoviesByDirector); // Get movies by director
 
-//post req to post new movie with params - title, genre, duration, release date 
-//get req to get all movies
-//get req to get movie by id
-
+module.exports = router;
