@@ -14,10 +14,11 @@ const ticketRoutes = require("./routes/ticketRoutes.js");
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: "https://movie-api-frontend.vercel.app", // Allow only your frontend
-  methods: ["GET", "POST", "PUT", "DELETE"], // Allow common HTTP methods
-  credentials: true, // Allow cookies & authentication headers if needed
+  origin: ["https://movie-api-frontend.vercel.app", "http://localhost:3000"], // Allow both deployed and local frontend
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 }));
+
 
 
 // Serve Static Files (Frontend)

@@ -6,26 +6,26 @@ const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  isVerified: { type: Boolean, default: false },
+  isVerified: { type: Boolean, default: false }, 
   verificationToken: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
-// Static method for signing up a new user
-userSchema.statics.signup = async function (name, email, password) {
-  // Check if user already exists
-  const exists = await this.findOne({ email });
-  if (exists) {
-    throw new Error("User already exists");
-  }
+// // Static method for signing up a new user
+// userSchema.statics.signup = async function (name, email, password) {
+//   // Check if user already exists
+//   const exists = await this.findOne({ email });
+//   if (exists) {
+//     throw new Error("User already exists");
+//   }
 
-  // Hash password before saving
-  const salt = await bcrypt.genSalt(10);
-  const hash = await bcrypt.hash(password, salt);
+//   // Hash password before saving
+//   const salt = await bcrypt.genSalt(10);
+//   const hash = await bcrypt.hash(password, salt);
 
-  // Create and return new user
-  return this.create({ name, email, password: hash });
-};
+//   // Create and return new user
+//   return this.create({ name, email, password: hash });
+// };
 
 // Static method for logging in a user
 userSchema.statics.login = async function (email, password) {

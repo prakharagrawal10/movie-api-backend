@@ -1,4 +1,4 @@
-const { Showtime, Movie, Reservation } = require('../models/model.js')
+const { Showtime, Movie, Reservation, Ticket } = require('../models/model.js')
 const mongoose = require('mongoose')
 
 const addShowtime = async (req, res) => {
@@ -67,16 +67,23 @@ const getShowtimeByTitle = async (req, res) => {
 };  
 
 const reserveSeats = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction(); // Start transaction
+
     try {
-        const { movieTitle, theaterName, time, price, selectedSeats } = req.body;
+        const { movieTitle, theaterName, time, selectedSeats, name, email, price } = req.body;
 
         // Find the showtime
-        const showtime = await Showtime.findOne({ movieTitle, theaterName, time });
-        if (!showtime) return res.status(404).json({ error: "Showtime not found" });
+        const showtime = await Showtime.findOne({ movieTitle, theaterName, time }).session(session);
+        if (!showtime) {
+            await session.abortTransaction();
+            return res.status(404).json({ error: "Showtime not found" });
+        }
 
         // Check if any selected seat is already booked
         for (const [row, col] of selectedSeats) {
             if (showtime.seats[row][col]) {
+                await session.abortTransaction();
                 return res.status(400).json({ error: "One or more seats are already booked" });
             }
         }
@@ -86,13 +93,32 @@ const reserveSeats = async (req, res) => {
             showtime.seats[row][col] = true;
         });
 
+        // Save updated seats in Showtime collection
+        await showtime.save({ session });
 
-        // Save the updated seat map
-        await showtime.save();
+        // ✅ Also save reservation in Ticket collection
+        await Ticket.create(
+            [
+                {
+                    name,
+                    email,
+                    movieTitle,
+                    theater: theaterName,
+                    time,
+                    seats: selectedSeats,
+                    price: price * selectedSeats.length,
+                },
+            ],
+            { session }
+        );
 
-        // Return the updated seat map
-        res.status(200).json(showtime);
+        await session.commitTransaction(); // ✅ Commit transaction if everything is successful
+        session.endSession();
+
+        res.status(200).json({ message: "Booking successful!", seats: showtime.seats });
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         res.status(500).json({ error: "Server error" });
     }
 };
